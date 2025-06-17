@@ -29,6 +29,10 @@ export const api = {
     });
     return response.json();
   },
+  getHighestBid:async(id)=>{
+    const response = await fetch(`${API_URL}/bids/${id}`);
+    return response.json();
+  },
 
   vote: async (meme_id, vote_type) => {
     const response = await fetch(`${API_URL}/votes`, {

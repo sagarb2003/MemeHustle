@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { MemeGallery } from './components/MemeGallery';
-import { Leaderboard } from './components/LeaderBoard';
-import { UploadMeme } from './components/UploadMeme';
+import UploadMeme  from './components/UploadMeme';
 
 function App() {
   const [showUpload, setShowUpload] = useState(false);
@@ -12,7 +11,7 @@ function App() {
       <header className="border-b border-purple-500 p-6 shadow-lg bg-black bg-opacity-60 backdrop-blur">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h1 className="text-4xl font-extrabold tracking-wide text-purple-400 animate-pulse">
-            CyberMeme
+            MemeHustle
           </h1>
           <button
             onClick={() => setShowUpload(!showUpload)}
@@ -37,15 +36,6 @@ function App() {
 
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-purple-500 p-6 mt-8 text-center bg-black bg-opacity-60">
-        <div className="max-w-7xl mx-auto">
-          <p className="text-purple-300 italic tracking-wider">
-            Built with 💙 for the Cyberpunk Hackathon
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }

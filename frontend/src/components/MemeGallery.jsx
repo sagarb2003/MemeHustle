@@ -147,7 +147,7 @@ export const MemeGallery = () => {
       {/* Bid Notification */}
       {bidNotification && (
         <div className="fixed top-6 right-6 z-50 max-w-sm">
-          <div className="bg-gradient-to-r from-neon-blue to-cyber-purple text-white p-4 rounded-lg shadow-2xl border border-neon-pink/50 transform animate-slide-in-right">
+          <div className="bg-white text-black p-4 rounded-lg shadow-2xl border border-neon-pink/50 transform animate-slide-in-right">
             <div className="flex items-start space-x-3">
               <div className="text-2xl">💎</div>
               <div>

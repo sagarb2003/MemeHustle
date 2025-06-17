@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
 
 export const MemeCard = ({ meme, onUpdate, onBidNotification }) => {
@@ -7,6 +7,20 @@ export const MemeCard = ({ meme, onUpdate, onBidNotification }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [highestBid, setHighestBid] = useState(null);
+
+  useEffect(() => {
+    fetchHighestBid();
+  }, [meme.id]);
+
+  const fetchHighestBid = async () => {
+    try {
+      const response = await api.getHighestBid(meme.id);
+      setHighestBid(response);
+    } catch (error) {
+      console.error('Failed to fetch highest bid:', error);
+    }
+  };
 
   const handleVote = async (type) => {
     try {
@@ -34,6 +48,7 @@ export const MemeCard = ({ meme, onUpdate, onBidNotification }) => {
         credits: bidAmount
       });
       setBidAmount(0);
+      fetchHighestBid()
       // Success feedback
       const button = document.querySelector(`#bid-btn-${meme.id}`);
       if (button) {
@@ -112,8 +127,7 @@ export const MemeCard = ({ meme, onUpdate, onBidNotification }) => {
         {/* Caption */}
         <div className="mb-4">
           <p className="text-gray-300 text-sm">
-            {meme.caption.split(' ').slice(0, 30).join(' ')}
-            {meme.caption.split(' ').length > 30 ? '...' : ''}
+            {meme.caption}
           </p>
         </div>
 
@@ -164,6 +178,14 @@ export const MemeCard = ({ meme, onUpdate, onBidNotification }) => {
 
         {/* Bidding Section */}
         <div className="bg-gradient-to-r from-neon-blue/5 to-neon-pink/5 p-4 rounded-xl border border-neon-blue/20">
+           {highestBid && (
+            <div className="text-center mb-3">
+                <p className="text-yellow-400 text-sm">
+                    Highest bid by {highestBid.user_id} of {highestBid.credits} 💎
+                <br />
+                </p>
+            </div>
+           )}
           <div className="flex items-center justify-center mb-3">
             <h4 className="text-neon-pink font-bold text-sm">💎 PLACE YOUR BID</h4>
           </div>

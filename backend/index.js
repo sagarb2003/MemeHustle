@@ -32,7 +32,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 async function generateCaption(tags) {
   try {
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-    const prompt = `Generate a funny caption for a meme with tags: ${tags.join(', ')}`;
+    const prompt = `Generate a single line funny caption for a meme with emojis with tags: ${tags.join(', ')} in 15 words`;
     const result = await model.generateContent(prompt);
     return result.response.text();
   } catch (error) {
