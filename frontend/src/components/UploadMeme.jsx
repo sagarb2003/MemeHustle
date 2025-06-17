@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Upload, Image, Tag, Sparkles, Loader2 } from 'lucide-react';
+import { api } from '../services/api';
 
 export default function UploadMeme({ onMemeUploaded }) {
   const [title, setTitle] = useState('');
@@ -19,9 +20,13 @@ export default function UploadMeme({ onMemeUploaded }) {
 
     try {
       setIsLoading(true);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await api.createMeme({
+        title,
+        image_url: imageUrl,
+        tags: tags.split(',').map(tag => tag.trim()),
+        owner_id: 'mock-user-id',
+      });
+
       setTitle('');
       setImageUrl('');
       setTags('');

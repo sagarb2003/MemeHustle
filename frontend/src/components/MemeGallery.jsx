@@ -113,12 +113,6 @@ export const MemeGallery = () => {
                 {/* Remaining Memes - Single Column */}
                 {memes.length > 2 && (
                   <div className="space-y-6">
-                    <div className="flex items-center justify-center">
-                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-neon-blue to-transparent"></div>
-                      <span className="px-4 text-neon-blue font-bold">MORE MEMES</span>
-                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-neon-blue to-transparent"></div>
-                    </div>
-                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {memes.slice(2).map((meme) => (
                         <div key={meme.id} className="transform transition-all duration-300 hover:scale-[1.02]">
