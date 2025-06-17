@@ -54,6 +54,11 @@ async function analyzeVibe(tags) {
 }
 
 // API Routes
+
+app.get('/',(req,res)=>{
+    res.send('Backend is running')
+})
+
 app.post('/memes', async (req, res) => {
   try {
     const { title, image_url, tags, owner_id } = req.body;
