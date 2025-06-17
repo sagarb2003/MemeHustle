@@ -8,16 +8,26 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: ['http://localhost:5173', 'https://meme-hustle-nine.vercel.app/'],
-    methods: ['GET', 'POST']
-  }
-});
-
-// Middleware
-app.use(cors());
-app.use(express.json());
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://meme-hustle-nine.vercel.app'
+  ];
+  
+  // Express CORS
+  app.use(cors({
+    origin: allowedOrigins,
+    credentials: true
+  }));
+  
+  // Socket.IO CORS
+  const io = new Server(server, {
+    cors: {
+      origin: allowedOrigins,
+      methods: ['GET', 'POST'],
+      credentials: true
+    }
+  });
+  app.use(express.json());
 
 // Supabase Setup
 const supabase = createClient(
