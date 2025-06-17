@@ -109,6 +109,14 @@ export const MemeCard = ({ meme, onUpdate, onBidNotification }) => {
           </div>
         </div>
 
+        {/* Caption */}
+        <div className="mb-4">
+          <p className="text-gray-300 text-sm">
+            {meme.caption.split(' ').slice(0, 30).join(' ')}
+            {meme.caption.split(' ').length > 30 ? '...' : ''}
+          </p>
+        </div>
+
         {/* Tags */}
         <div className="flex flex-wrap gap-2 mb-4">
           {meme.tags.slice(0, 3).map((tag, index) => (
