@@ -25,9 +25,9 @@ function App() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-10 px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
+        <div className="flex flex-col-reverse lg:flex-row gap-10">
           {/* Main Content Area */}
-          <div className="lg:col-span-3">
+          <div className="flex-grow">
             {showUpload ? (
               <UploadMeme onMemeUploaded={() => setShowUpload(false)} />
             ) : (
@@ -35,12 +35,6 @@ function App() {
             )}
           </div>
 
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-8">
-              <Leaderboard />
-            </div>
-          </div>
         </div>
       </main>
 

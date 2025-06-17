@@ -28,12 +28,7 @@ const supabase = createClient(
 // Google Gemini AI Setup
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// In-memory cache for leaderboard
-let leaderboardCache = [];
-let lastCacheUpdate = null;
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-
-// AI  Functions
+// AI Functions
 async function generateCaption(tags) {
   try {
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
@@ -101,6 +96,7 @@ app.get('/memes', async (req, res) => {
   }
 });
 
+// Simplified /bids route - only emits socket message
 app.post('/bids', async (req, res) => {
   try {
     const { meme_id, user_id, credits } = req.body;
@@ -110,7 +106,11 @@ app.post('/bids', async (req, res) => {
       .select();
 
     if (error) throw error;
-    io.emit('bid_update', { meme_id, bid: data[0] });
+    
+    // Emit simplified message format
+    const message = `User ${user_id} bid ${credits} credits!`;
+    io.emit('bid_update', { message, meme_id, bid: data[0] });
+    
     res.json(data[0]);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -118,72 +118,50 @@ app.post('/bids', async (req, res) => {
 });
 
 app.post('/votes', async (req, res) => {
-    try {
-      const { meme_id, vote_type } = req.body;
-      const increment = vote_type === 'upvote' ? 1 : -1;
-  
-      // Step 1: Fetch current upvotes
-      const { data: currentData, error: fetchError } = await supabase
-        .from('memes')
-        .select('upvotes')
-        .eq('id', meme_id)
-        .single();
-  
-      if (fetchError) throw fetchError;
-  
-      const newUpvotes = currentData.upvotes + increment;
-  
-      // Step 2: Update with new upvotes
-      const { data, error } = await supabase
-        .from('memes')
-        .update({ upvotes: newUpvotes })
-        .eq('id', meme_id)
-        .select();
-  
-      if (error) throw error;
-  
-      io.emit('vote_update', { meme_id, meme: data[0] });
-      res.json(data[0]);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
-  
+  try {
+    const { meme_id, vote_type } = req.body;
+    const increment = vote_type === 'upvote' ? 1 : -1;
+
+    // Step 1: Fetch current upvotes
+    const { data: currentData, error: fetchError } = await supabase
+      .from('memes')
+      .select('upvotes')
+      .eq('id', meme_id)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    const newUpvotes = currentData.upvotes + increment;
+
+    // Step 2: Update with new upvotes
+    const { data, error } = await supabase
+      .from('memes')
+      .update({ upvotes: newUpvotes })
+      .eq('id', meme_id)
+      .select();
+
+    if (error) throw error;
+
+    io.emit('vote_update', { meme_id, meme: data[0] });
+    res.json(data[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Simplified leaderboard without caching - just sort by upvotes
 app.get('/leaderboard', async (req, res) => {
   try {
     const top = parseInt(req.query.top) || 10;
-    const now = Date.now();
 
-    if (lastCacheUpdate && now - lastCacheUpdate < CACHE_DURATION) {
-      return res.json(leaderboardCache.slice(0, top));
-    }
-
-    const { data: memesByVotes, error: votesError } = await supabase
+    const { data, error } = await supabase
       .from('memes')
       .select('*')
       .order('upvotes', { ascending: false })
       .limit(top);
 
-    if (votesError) throw votesError;
-
-    const { data: memesByBids, error: bidsError } = await supabase
-      .from('memes')
-      .select(`
-        *,
-        bids:bids(credits)
-      `)
-      .order('bids(credits)', { ascending: false })
-      .limit(top);
-
-    if (bidsError) throw bidsError;
-
-    leaderboardCache = {
-      byVotes: memesByVotes,
-      byBids: memesByBids
-    };
-    lastCacheUpdate = now;
-
-    res.json(leaderboardCache);
+    if (error) throw error;
+    res.json(data || []);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
