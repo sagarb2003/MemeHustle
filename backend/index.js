@@ -10,7 +10,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ['http://localhost:5173', 'https://meme-hustle-backend.vercel.app'],
+    origin: ['http://localhost:5173', 'https://meme-hustle-nine.vercel.app/'],
     methods: ['GET', 'POST']
   }
 });
@@ -121,6 +121,23 @@ app.post('/bids', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+app.get('/bids/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { data, error } = await supabase
+        .from('bids')
+        .select('*')
+        .eq('meme_id', id)
+        .order('credits', { ascending: false })
+        .limit(1);
+  
+      if (error) throw error;
+      res.json(data[0] || null);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
 
 app.post('/votes', async (req, res) => {
   try {
